@@ -1,6 +1,8 @@
 import logging
 
 from aiogram import types
+from contextlib import suppress
+from aiogram.utils.exceptions import MessageNotModified
 
 import markups as nav
 from func import check_member_channel, get_invite_link, open_admin, save_user_id
@@ -38,16 +40,17 @@ async def checksubquery(call: types.CallbackQuery):
             without_sub += f"<b>Канал {step} -</b> {link}\n"
 
     if without_sub != "":
-
-        await call.message.edit_text(
-            f"❌ ДОСТУП ЗАКРЫТ ❌\n\n👉Для доступа к приватному каналу нужно быть подписчиком <b>Кино-каналов.</b>\n\n"
-            f"Подпишись на каналы ниже 👇 и нажми кнопку <b>Я ПОДПИСАЛСЯ</b> для проверки!\n\n{without_sub}",
-            reply_markup=nav.checkSubMenu, disable_web_page_preview=True)
+        with suppress(MessageNotModified):
+            await call.message.edit_text(
+                f"❌ ДОСТУП ЗАКРЫТ ❌\n\n👉Для доступа к приватному каналу нужно быть подписчиком <b>Кино-каналов.</b>\n\n"
+                f"Подпишись на каналы ниже 👇 и нажми кнопку <b>Я ПОДПИСАЛСЯ</b> для проверки!\n\n{without_sub}",
+                reply_markup=nav.checkSubMenu, disable_web_page_preview=True)
 
     else:
-        await call.message.edit_text(
-            "✅ ДОСТУП ОТКРЫТ\n\nВсе новинки 2022 сливаем на наш приватный канал. <b>Подпишись 👇</b>",
-            reply_markup=nav.urlChannelMenu, disable_web_page_preview=True)
+        with suppress(MessageNotModified):
+            await call.message.edit_text(
+                "✅ ДОСТУП ОТКРЫТ\n\nВсе новинки 2022 сливаем на наш приватный канал. <b>Подпишись 👇</b>",
+                reply_markup=nav.urlChannelMenu, disable_web_page_preview=True)
 
 
 @dp.callback_query_handler(text="check_sub", chat_type=types.ChatType.PRIVATE)
@@ -70,17 +73,19 @@ async def checksubquery(call: types.CallbackQuery):
 
     if without_sub != "":
         try:
-            await call.message.edit_text(
-                f"❌ ДОСТУП ЗАКРЫТ ❌\n\n👉Для доступа к приватному каналу нужно быть подписчиком <b>Кино-каналов.</b>"
-                f"\n\nПодпишись на каналы ниже 👇 и нажми кнопку <b>Я ПОДПИСАЛСЯ</b> для проверки!\n\n{without_sub}",
-                reply_markup=nav.checkSubMenu, disable_web_page_preview=True)
-            await call.answer("Вы подписались не на все каналы!")
+            with suppress(MessageNotModified):
+                await call.message.edit_text(
+                    f"❌ ДОСТУП ЗАКРЫТ ❌\n\n👉Для доступа к приватному каналу нужно быть подписчиком <b>Кино-каналов.</b>"
+                    f"\n\nПодпишись на каналы ниже 👇 и нажми кнопку <b>Я ПОДПИСАЛСЯ</b> для проверки!\n\n{without_sub}",
+                    reply_markup=nav.checkSubMenu, disable_web_page_preview=True)
+                await call.answer("Вы подписались не на все каналы!")
         except:
             await call.answer("Вы не подписались ни на один из каналов!")
     else:
-        await call.message.edit_text(
-            "✅ ДОСТУП ОТКРЫТ\n\nВсе новинки 2022 сливаем на наш приватный канал. <b>Подпишись 👇</b>",
-            reply_markup=nav.urlChannelMenu, disable_web_page_preview=True)
+        with suppress(MessageNotModified):
+            await call.message.edit_text(
+                "✅ ДОСТУП ОТКРЫТ\n\nВсе новинки 2022 сливаем на наш приватный канал. <b>Подпишись 👇</b>",
+                reply_markup=nav.urlChannelMenu, disable_web_page_preview=True)
 
 
 @dp.message_handler(commands=['help'], chat_type=types.ChatType.PRIVATE)
